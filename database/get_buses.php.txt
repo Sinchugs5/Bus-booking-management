@@ -1,0 +1,17 @@
+<?php
+include 'db.php';
+
+$source = $_GET['source'] ?? '';
+$destination = $_GET['destination'] ?? '';
+
+$sql = "SELECT * FROM Buses WHERE Source LIKE '%$source%' AND Destination LIKE '%$destination%'";
+$result = $conn->query($sql);
+
+$buses = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $buses[] = $row;
+    }
+}
+echo json_encode($buses);
+?>

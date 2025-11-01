@@ -1,0 +1,31 @@
+<?php
+include 'db.php';
+
+$data = json_decode(file_get_contents("php://input"), true);
+
+$userId = $data['userId'];
+$busId = $data['busId'];
+$seatsBooked = $data['seatsBooked'];
+$bookingDate = date("Y-m-d H:i:s");
+
+// Check seat availability
+$sql = "SELECT SeatsAvailable FROM Buses WHERE BusID = $busId";
+$result = $conn->query($sql);
+$row = $result->fetch_assoc();
+
+if ($row['SeatsAvailable'] >= $seatsBooked) {
+    // Insert booking
+    $sql = "INSERT INTO Bookings (UserID, BusID, SeatsBooked, BookingDate) VALUES ($userId, $busId, $seatsBooked, '$bookingDate')";
+    if ($conn->query($sql) === TRUE) {
+        // Update available seats
+        $sql = "UPDATE Buses SET SeatsAvailable = SeatsAvailable - $seatsBooked WHERE BusID = $busId";
+        $conn->query($sql);
+
+        echo json_encode(["message" => "Booking successful"]);
+    } else {
+        echo json_encode(["message" => "Error: " . $conn->error]);
+    }
+} else {
+    echo json_encode(["message" => "Not enough seats available"]);
+}
+?>
