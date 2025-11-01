@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -86,3 +87,93 @@
     </script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Booking Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bus Booking Management</h1>
+    <div>
+        <label>Source: <input type="text" id="source"></label>
+        <label>Destination: <input type="text" id="destination"></label>
+        <button onclick="searchBuses()">Search</button>
+    </div>
+    <h2>Available Buses</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Bus Name</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Seats Available</th>
+                <th>Fare</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="bus-list"></tbody>
+    </table>
+
+    <script>
+        const API_BASE = "http://localhost/bus_booking";
+
+        function searchBuses() {
+            const source = document.getElementById('source').value;
+            const destination = document.getElementById('destination').value;
+
+            fetch(`${API_BASE}/get_buses.php?source=${source}&destination=${destination}`)
+                .then(res => res.json())
+                .then(data => {
+                    const busList = document.getElementById('bus-list');
+                    busList.innerHTML = '';
+
+                    data.forEach(bus => {
+                        busList.innerHTML += `
+                            <tr>
+                                <td>${bus.BusName}</td>
+                                <td>${bus.Source}</td>
+                                <td>${bus.Destination}</td>
+                                <td>${bus.SeatsAvailable}</td>
+                                <td>${bus.Fare}</td>
+                                <td><button onclick="bookBus(${bus.BusID})">Book</button></td>
+                            </tr>
+                        `;
+                    });
+                });
+        }
+
+        function bookBus(busId) {
+            const userId = 1; // Static user ID for testing
+            const seatsBooked = prompt("Enter number of seats to book:");
+
+            fetch(`${API_BASE}/book_bus.php`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, busId, seatsBooked })
+            })
+                .then(res => res.json())
+                .then(data => alert(data.message))
+                .catch(err => console.error(err));
+        }
+    </script>
+</body>
+</html>
+>>>>>>> 203fd1c75cd7d11e5ca1236446d7eb1a210fbedf
